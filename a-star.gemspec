@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'a-star'
-  s.version     = '0.1.3'
-  s.required_ruby_version = '>= 1.9.3'
+  s.version     = '0.1.4'
+  s.required_ruby_version = '>= 1.9.2'
   s.executables << 'a-star'
   s.add_runtime_dependency 'chunky_png', '~> 1.3', '>= 1.3.8'
   s.date        = '2017-06-13'
