@@ -54,29 +54,29 @@ class AStar
     @width        = maze.dimension.width
     @perimiter    = (2 * @width) + (2 * @height)
     @area = @width * @height
-    @visited = []
-    @unvisited  = []
-    @visited << @firstNode
+    @open = []
+    @closed  = []
+    @open << @firstNode
   end
 
   def solve
 
-    until @visited.empty? do
+    until @open.empty? do
       minIndex = 0
-      0.upto @visited.length - 1 do |i|
-        if @visited[i][5] < @visited[minIndex][5]
+      0.upto @open.length - 1 do |i|
+        if @open[i][5] < @open[minIndex][5]
           minIndex = i
         end
       end
       chosenNode = minIndex
 
-      here = @visited[chosenNode]
+      here = @open[chosenNode]
 
       if here[0] == @destNode[0] && here[1] == @destNode[1]
         path = [@destNode]
         puts "We're here! Final node at: (x: #{here[0]}, y: #{here[1]})"
         until here[2] == -1 do
-          here = @unvisited[here[2]]
+          here = @closed[here[2]]
           path.unshift here
         end
         puts "The entire path from node #{@start} to node #{@dest} are the nodes: \n#{path}"
@@ -92,8 +92,8 @@ class AStar
         return path
       end
 
-      @visited.delete_at chosenNode
-      @unvisited << here
+      @open.delete_at chosenNode
+      @closed << here
 
       friendNodes = lookAround here
       0.upto friendNodes.length - 1 do |j|
@@ -101,20 +101,20 @@ class AStar
         verticalFriend   = friendNodes[j][1]
 
         if passable? horizontalFriend, verticalFriend || (horizontalFriend == @destNode[0] && verticalFriend == @destNode[1])
-          onUnvisited = false
-          0.upto @unvisited.length - 1 do |k|
-            unvisitedNode = @unvisited[k]
-            if horizontalFriend == unvisitedNode[0] && verticalFriend == unvisitedNode[1]
-              onUnvisited = true
+          onClosed = false
+          0.upto @closed.length - 1 do |k|
+            closedNode = @closed[k]
+            if horizontalFriend == closedNode[0] && verticalFriend == closedNode[1]
+              onClosed = true
               break
             end
           end
-          next if onUnvisited
+          next if onClosed
 
           onVisited = false
-          0.upto @visited.length - 1 do |k|
-            visitedNode = @visited[k]
-            if horizontalFriend == visitedNode[0] && verticalFriend == visitedNode[1]
+          0.upto @open.length - 1 do |k|
+            openNode = @open[k]
+            if horizontalFriend == openNode[0] && verticalFriend == openNode[1]
               onVisited = true
               break
             end
@@ -125,15 +125,15 @@ class AStar
           end
           lowestHeuristic = friendHeuristics.min
           unless onVisited && heuristic(friendNodes[j], @dest) != lowestHeuristic # If you're somwhere new and is fastest
-            newNode = node horizontalFriend, verticalFriend, @unvisited.length - 1, -1, -1, -1
+            newNode = node horizontalFriend, verticalFriend, @closed.length - 1, -1, -1, -1
             newNode[3] = here[3] + cost(here, newNode)
             newNode[4] = heuristic newNode, @destNode
             newNode[5] = newNode[3] + newNode[4]
 
-            @visited << newNode
+            @open << newNode
             #puts "!! New Node at\n(x: " + horizontalFriend.to_s + ", y: " + verticalFriend.to_s + ")"
             #puts "Destination = " + @destNode[0].to_s + ", " + @destNode[1].to_s
-            # Uncoment below to see unvisited nodes!
+            # Uncoment below to see closed nodes!
             #@solvedMaze[horizontalFriend, verticalFriend] = ChunkyPNG::Color.from_hex "#999"
           end
         end
