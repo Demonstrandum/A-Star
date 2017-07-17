@@ -111,11 +111,11 @@ class AStar
           end
           next if onClosed
 
-          onVisited = false
+          onOpen = false
           0.upto @open.length - 1 do |k|
             openNode = @open[k]
             if horizontalFriend == openNode[0] && verticalFriend == openNode[1]
-              onVisited = true
+              onOpen = true
               break
             end
           end
@@ -124,7 +124,7 @@ class AStar
             friendHeuristics << heuristic(friendNodes[k], @dest)
           end
           lowestHeuristic = friendHeuristics.min
-          unless onVisited && heuristic(friendNodes[j], @dest) != lowestHeuristic # If you're somwhere new and is fastest
+          unless onOpen && heuristic(friendNodes[j], @dest) != lowestHeuristic # If you're somwhere new and is fastest
             newNode = node horizontalFriend, verticalFriend, @closed.length - 1, -1, -1, -1
             newNode[3] = here[3] + cost(here, newNode)
             newNode[4] = heuristic newNode, @destNode
